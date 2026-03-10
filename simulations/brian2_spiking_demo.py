@@ -42,13 +42,13 @@ V_reset = -70 * mV    # reset after spike
 tau_ref = 2 * ms      # refractory period
 
 # Synaptic parameters
-w_exc = 0.5 * mV      # excitatory weight
-w_inh = -2.0 * mV     # inhibitory weight (stronger for balance)
+w_exc = 1.0 * mV      # excitatory weight
+w_inh = -3.0 * mV     # inhibitory weight (stronger for balance)
 p_connect = 0.1       # connection probability
 
 # Simulation
 sim_duration = 1.0 * second
-input_rate = 15 * Hz   # external Poisson input rate
+input_rate = 50 * Hz   # external Poisson input rate
 
 print("=" * 60)
 print("  BRIAN2 Spiking Neural Network Demo")
@@ -110,8 +110,8 @@ syn_ii.connect(p=p_connect)
 # External input (analogous to MEA stimulation)
 # ──────────────────────────────────────────────
 poisson_input = PoissonGroup(100, rates=input_rate)
-syn_input = Synapses(poisson_input, exc_neurons, on_pre="v_post += 1.5 * mV")
-syn_input.connect(p=0.05)
+syn_input = Synapses(poisson_input, exc_neurons, on_pre="v_post += 2.0 * mV")
+syn_input.connect(p=0.1)
 
 # ──────────────────────────────────────────────
 # Monitors
@@ -160,6 +160,7 @@ try:
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 8), sharex=True,
                               gridspec_kw={"height_ratios": [3, 1]})
+    BORDER_COLOR = (0, 0.824, 1.0, 0.2)   # rgba(0,210,255,0.2)
     fig.patch.set_facecolor("#080b18")
 
     # Raster plot
@@ -177,8 +178,8 @@ try:
     ax1.legend(loc="upper right", fontsize=9, facecolor="#0c1024",
                edgecolor="#00d2ff", labelcolor="white")
     ax1.tick_params(colors="white")
-    ax1.spines["bottom"].set_color("rgba(0,210,255,0.2)")
-    ax1.spines["left"].set_color("rgba(0,210,255,0.2)")
+    ax1.spines["bottom"].set_color(BORDER_COLOR)
+    ax1.spines["left"].set_color(BORDER_COLOR)
     ax1.spines["top"].set_visible(False)
     ax1.spines["right"].set_visible(False)
 
@@ -195,8 +196,8 @@ try:
     ax2.set_ylabel("Rate (Hz)", color="white", fontsize=12,
                     fontfamily="monospace")
     ax2.tick_params(colors="white")
-    ax2.spines["bottom"].set_color("rgba(0,210,255,0.2)")
-    ax2.spines["left"].set_color("rgba(0,210,255,0.2)")
+    ax2.spines["bottom"].set_color(BORDER_COLOR)
+    ax2.spines["left"].set_color(BORDER_COLOR)
     ax2.spines["top"].set_visible(False)
     ax2.spines["right"].set_visible(False)
 
