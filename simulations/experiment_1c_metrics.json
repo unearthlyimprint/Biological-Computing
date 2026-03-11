@@ -1,0 +1,74 @@
+{
+  "experiment": "1c_enaqt_ion_channel",
+  "model": {
+    "n_sites": 4,
+    "hopping_cm": 100.0,
+    "hopping_meV": 12.4,
+    "sink_rate_cm": 5.0,
+    "transit_time_ps": 5.0,
+    "site_spacing_A": 3.4,
+    "filter_length_A": 12.0
+  },
+  "enaqt_peak": {
+    "optimal_dephasing_rate_cm": 1145.05,
+    "max_transport_efficiency": 0.41783,
+    "coherent_limit_efficiency": 0.062534,
+    "classical_limit_efficiency": 0.000513,
+    "enhancement_ratio": 6.68
+  },
+  "temperature_mapping": [
+    {
+      "temperature_K": 4,
+      "label": "4 K (cryo)",
+      "gamma_cm": 2.78,
+      "efficiency": 0.040159
+    },
+    {
+      "temperature_K": 77,
+      "label": "77 K (LN\u2082)",
+      "gamma_cm": 53.52,
+      "efficiency": 0.030333
+    },
+    {
+      "temperature_K": 293,
+      "label": "293 K (room)",
+      "gamma_cm": 203.65,
+      "efficiency": 0.169811
+    },
+    {
+      "temperature_K": 310,
+      "label": "310 K (body)",
+      "gamma_cm": 215.46,
+      "efficiency": 0.180082
+    }
+  ],
+  "body_temperature_assessment": {
+    "gamma_body_cm": 215.46,
+    "efficiency_body": 0.180082,
+    "proximity_to_peak": "NEAR the ENAQT peak",
+    "ratio_to_optimal": 0.188
+  },
+  "barrier_comparison": {
+    "0": {
+      "peak_gamma_cm": 0.01,
+      "peak_efficiency": 0.724289
+    },
+    "250": {
+      "peak_gamma_cm": 0.01,
+      "peak_efficiency": 0.794723
+    },
+    "500": {
+      "peak_gamma_cm": 0.01,
+      "peak_efficiency": 0.853984
+    },
+    "1000": {
+      "peak_gamma_cm": 701.7,
+      "peak_efficiency": 0.495832
+    },
+    "1500": {
+      "peak_gamma_cm": 1060.82,
+      "peak_efficiency": 0.416364
+    }
+  },
+  "elapsed_s": 10.2
+}
