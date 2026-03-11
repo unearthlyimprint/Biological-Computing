@@ -1,0 +1,177 @@
+{
+  "experiment": "1b_posner_spin_dynamics",
+  "physics": {
+    "n_spins": 6,
+    "hilbert_dim": 64,
+    "larmor_freq_Hz": 862.6,
+    "B_earth_uT": 50.0,
+    "T1_body_s": 5.0,
+    "dipolar_couplings": [
+      {
+        "spins": [
+          0,
+          1
+        ],
+        "distance_A": 4.0,
+        "coupling_Hz": 308.12
+      },
+      {
+        "spins": [
+          2,
+          3
+        ],
+        "distance_A": 4.0,
+        "coupling_Hz": 308.12
+      },
+      {
+        "spins": [
+          4,
+          5
+        ],
+        "distance_A": 4.0,
+        "coupling_Hz": 308.12
+      },
+      {
+        "spins": [
+          0,
+          2
+        ],
+        "distance_A": 5.2,
+        "coupling_Hz": 140.25
+      },
+      {
+        "spins": [
+          1,
+          3
+        ],
+        "distance_A": 5.2,
+        "coupling_Hz": 140.25
+      },
+      {
+        "spins": [
+          0,
+          4
+        ],
+        "distance_A": 5.5,
+        "coupling_Hz": 118.53
+      },
+      {
+        "spins": [
+          1,
+          5
+        ],
+        "distance_A": 5.5,
+        "coupling_Hz": 118.53
+      },
+      {
+        "spins": [
+          2,
+          4
+        ],
+        "distance_A": 4.8,
+        "coupling_Hz": 178.31
+      },
+      {
+        "spins": [
+          3,
+          5
+        ],
+        "distance_A": 4.8,
+        "coupling_Hz": 178.31
+      }
+    ]
+  },
+  "dephasing_sweep": [
+    {
+      "gamma_2_Hz": 10.0,
+      "tau_coherence_s": 0.0012717430431559212,
+      "tau_entanglement_s": 0.0015896788039449015
+    },
+    {
+      "gamma_2_Hz": 28.48035868435802,
+      "tau_coherence_s": 0.001062704745357043,
+      "tau_entanglement_s": 0.0016779548610900681
+    },
+    {
+      "gamma_2_Hz": 81.11308307896873,
+      "tau_coherence_s": 0.0009236897909360348,
+      "tau_entanglement_s": 0.0013757081992664347
+    },
+    {
+      "gamma_2_Hz": 231.0129700083158,
+      "tau_coherence_s": 0.000704033884291012,
+      "tau_entanglement_s": 0.0009663210176543302
+    },
+    {
+      "gamma_2_Hz": 657.9332246575682,
+      "tau_coherence_s": 0.0004435451667142916,
+      "tau_entanglement_s": 0.00046051137527713335
+    },
+    {
+      "gamma_2_Hz": 1873.817422860383,
+      "tau_coherence_s": 0.00021957083132961174,
+      "tau_entanglement_s": 0.0001702099467671409
+    },
+    {
+      "gamma_2_Hz": 5336.699231206308,
+      "tau_coherence_s": 8.635989695820903e-05,
+      "tau_entanglement_s": 5.9764634573155035e-05
+    },
+    {
+      "gamma_2_Hz": 15199.11082952933,
+      "tau_coherence_s": 3.1062124248497e-05,
+      "tau_entanglement_s": 2.204408817635271e-05
+    },
+    {
+      "gamma_2_Hz": 43287.612810830615,
+      "tau_coherence_s": 1.1022044088176354e-05,
+      "tau_entanglement_s": 8.016032064128258e-06
+    },
+    {
+      "gamma_2_Hz": 123284.67394420659,
+      "tau_coherence_s": 4.008016032064129e-06,
+      "tau_entanglement_s": 4.008016032064129e-06
+    },
+    {
+      "gamma_2_Hz": 351119.17342151277,
+      "tau_coherence_s": 1.402805611222445e-06,
+      "tau_entanglement_s": 2.0040080160320645e-06
+    },
+    {
+      "gamma_2_Hz": 1000000.0,
+      "tau_coherence_s": 6.012024048096193e-07,
+      "tau_entanglement_s": 2.0040080160320645e-06
+    }
+  ],
+  "temperature_sweep": [
+    {
+      "temperature_K": 4,
+      "label": "4 K (cryo)",
+      "T1_s": 387.5,
+      "gamma_2_Hz": 12.90322580645161,
+      "tau_coherence_s": 0.0011122949833947007
+    },
+    {
+      "temperature_K": 77,
+      "label": "77 K (LN\u2082)",
+      "T1_s": 20.12987012987013,
+      "gamma_2_Hz": 248.38709677419354,
+      "tau_coherence_s": 0.0006805383448186913
+    },
+    {
+      "temperature_K": 293,
+      "label": "293 K (room)",
+      "T1_s": 5.290102389078498,
+      "gamma_2_Hz": 945.1612903225806,
+      "tau_coherence_s": 0.00035768909591153057
+    },
+    {
+      "temperature_K": 310,
+      "label": "310 K (body)",
+      "T1_s": 5.0,
+      "gamma_2_Hz": 999.9999999999999,
+      "tau_coherence_s": 0.0003460473281672402
+    }
+  ],
+  "elapsed_s": 1.0
+}
