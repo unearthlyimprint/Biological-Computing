@@ -1,0 +1,39 @@
+{
+  "experiment": "1a_quantum_vs_classical_delays",
+  "parameters": {
+    "n_exc": 800,
+    "n_inh": 200,
+    "p_connect": 0.1,
+    "sim_duration_s": 2.0,
+    "seed": 42,
+    "barrier_height_eV": 0.3,
+    "particle_energy_eV": 0.1,
+    "kappa_m_inv": 98176585520.97903,
+    "classical_delay_ms": 1.5,
+    "quantum_delay_mean_ms": 3.928828803624492,
+    "quantum_delay_std_ms": 0.34973905243616965
+  },
+  "classical": {
+    "n_spikes": 92524,
+    "mean_rate_hz": 57.83,
+    "cv_isi_mean": 0.3812,
+    "cv_isi_std": 0.1742,
+    "fano_factor": 6.0225,
+    "spike_entropy": 9.6033,
+    "max_entropy": 9.6439
+  },
+  "quantum": {
+    "n_spikes": 80663,
+    "mean_rate_hz": 50.41,
+    "cv_isi_mean": 0.5501,
+    "cv_isi_std": 0.1799,
+    "fano_factor": 11.3909,
+    "spike_entropy": 9.5636,
+    "max_entropy": 9.6439
+  },
+  "cross_synchrony": 0.1519060620085291,
+  "timing": {
+    "classical_elapsed_s": 17.038169860839844,
+    "quantum_elapsed_s": 35.40982985496521
+  }
+}
