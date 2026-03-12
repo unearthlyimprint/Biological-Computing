@@ -73,14 +73,15 @@ by 89\% compared to classical fixed delays;
 survives \SI{346}{\micro\second} at body temperature
 (\SI{310}{\kelvin});
 (iii)~a 4-site ion-channel model exhibits an ENAQT peak at
-$\gamma \approx \SI{1145}{cm^{-1}}$ with a 6.7$\times$
+$\gamma \approx \SI{1145}{cm^{-1}}$ (continuous-model optimum;
+nearest sampled point $\SI{1061}{cm^{-1}}$) with a 6.7$\times$
 enhancement over the coherent limit;
 (iv)~quantum-distributed noise preserves reservoir memory
 capacity (MC) better than Gaussian noise at high amplitudes;
 and (v)~when the ENAQT transport efficiency $\Pfour$ is used
 as the synaptic release probability in an ESN, the MC peak
-coincides \emph{exactly} with the ENAQT peak
-($\gamma = \SI{1061}{cm^{-1}}$), demonstrating that
+coincides with the ENAQT peak across the sampled
+dephasing sweep, demonstrating that
 quantum-enhanced molecular transport directly translates into
 quantum-enhanced network computation.
 
@@ -131,9 +132,10 @@ These observations share a common architectural motif: a
 nanoscale quantum-coherent domain from the thermal environment
 just long enough for the quantum effect to be functionally
 useful~\cite{Lambert2013,Cao2020,Kim2021}.
-We term this the ``quantum ridge''---the boundary between
+We term this the ``quantum ridge''---the narrow boundary between
 quantum and classical regimes where biology appears to extract
-computational advantage.
+computational advantage---a concept we return to in the
+Discussion.
 
 The present work asks a specific, quantitative question:
 \emph{Does quantum-enhanced molecular transport translate into
@@ -153,7 +155,7 @@ All simulations use Python~3.11 with BRIAN2~\cite{Stimberg2019}
 for spiking-network models and
 QuTiP~\cite{Johansson2012,Johansson2013} for open-quantum-system
 dynamics.  Code and data are available at
-\url{https://github.com/[redacted]/Biological-Computing}.
+\url{https://github.com/unearthlyimprint/Biological-Computing}.
 
 % ---- 1a -----------------------------------------------------
 \subsection{Experiment 1a: Quantum-modified synaptic delays}
@@ -196,7 +198,11 @@ longitudinal relaxation ($T_1$).
 We sweep $\gamma_2$ from \SI{10}{\hertz} to \SI{e6}{\hertz}
 and map temperature (\SIrange{4}{310}{\kelvin}) to dephasing
 rate via $\gamma_2 = \kB T / (\hbar \cdot T_1)$ with
-$T_1 = \SI{5}{\second}$ at body temperature.
+$T_1 = \SI{5}{\second}$.
+This $T_1$ value is based on bulk $^{31}$P NMR measurements
+of biological phosphate; it should be regarded as an optimistic
+assumption, since $T_1$ for nuclear spins in the specific cage
+geometry of a Posner cluster has not been measured directly.
 
 Coherence time $\tau_c$ is defined as the $1/e$ decay time
 of $|\langle \hat{\sigma}_x \rangle|$.
@@ -244,9 +250,10 @@ $\sigma = 0.05$:
   \item \textbf{Classical}: i.i.d.\ Gaussian noise,
     $\xi_i \sim \mathcal{N}(0, \sigma^2)$.
   \item \textbf{Quantum}: Cauchy-distributed noise
-    $\xi_i \sim \mathrm{Cauchy}(0, \sigma)$, reflecting the
-    heavy-tailed amplitude distribution produced by
-    quantum tunnelling through a barrier.
+    $\xi_i \sim \mathrm{Cauchy}(0, \sigma)$, motivated by
+    the heavy-tailed statistics characteristic of quantum
+    tunnelling processes (see Section~\ref{sec:discussion}
+    for caveats on this modelling choice).
 \end{enumerate}
 
 Memory capacity (MC) is computed as
@@ -324,6 +331,9 @@ longer-range temporal correlations.
   Entropy (bits) & 9.603     & 9.564       \\
   \bottomrule
 \end{tabular}
+\vspace{0.3em}
+\par\noindent\small $\pm$ values are standard deviations
+across all neurons in the network.
 \end{table}
 
 \begin{figure}[t]
@@ -498,17 +508,37 @@ $\Pfour$---and this \emph{same} probability, when used as
 stochastic synaptic gating, maximises the reservoir's
 memory capacity.
 
+Importantly, the full-connectivity reference condition
+($p_{\mathrm{rel}} = 1.0$, $\MC = 6.69$) yields the highest
+MC overall---but this case is physically unrealisable, since it
+corresponds to deterministic transmission with no stochastic
+gating.  Among the \emph{physically realisable} dephasing
+regimes (where $\Pfour < 1$), the ENAQT peak provides the
+optimal computational capacity.  The full-connectivity case
+serves as an upper bound demonstrating that the ESN architecture
+is not intrinsically limited; rather, it is the stochastic
+channel physics that constrains MC, and ENAQT maximises
+performance within those constraints.
+
 \subsection{Biological operating point}
 
 At body temperature (\SI{310}{\kelvin}), the thermal dephasing
 rate places biology at $\gamma \approx \SI{215}{cm^{-1}}$,
 which is on the ascending slope of the ENAQT curve with 19\%
-of the optimal efficiency.  This is consistent with the view
-that evolution has tuned biological temperatures toward but
-not past the ENAQT peak~\cite{Mohseni2008,Plenio2008},
-potentially because additional molecular mechanisms
-(e.g., structured spectral densities of the protein bath)
-shift or broaden the peak in real systems.
+of the optimal efficiency.  This raises the question of why
+evolution has not tuned the biological operating point to the
+ENAQT summit.  Several factors may contribute:
+(i)~structured (non-Markovian) spectral densities of the
+protein bath are known to broaden and shift the ENAQT
+peak~\cite{Cao2020}, so that the effective optimum in a real
+channel may lie closer to the biological temperature;
+(ii)~multi-ion occupancy and carbonyl-mediated binding in real
+selectivity filters alter the effective Hamiltonian;
+and (iii)~the biological temperature is constrained by many
+fitness pressures beyond ion-channel transport.
+Thus the 19\% figure likely understates the proximity of
+biology to its \emph{effective} quantum ridge---the
+ENAQT optimum of the full, structured environment.
 
 \subsection{Posner coherence lifetimes}
 
@@ -539,6 +569,16 @@ white-noise (Markovian) spectral density, whereas biological
 protein environments have structured spectral
 densities~\cite{Cao2020}.
 
+Fourth, using a Cauchy distribution to model ``quantum noise''
+in Experiment~1d is a heuristic choice.  The tunnelling
+transmission coefficient through a rectangular barrier is
+energy-dependent but does not straightforwardly produce
+Cauchy-distributed amplitudes.  The Cauchy distribution is
+used here as a convenient heavy-tailed proxy; the key
+qualitative finding---that heavy-tailed noise preserves
+reservoir capacity better than Gaussian noise---does not
+depend on the specific distributional form.
+
 Despite these simplifications, the qualitative finding---that
 ENAQT-optimal transport maximises computational capacity---is
 robust because it depends only on the \emph{shape} of the
@@ -558,6 +598,12 @@ The model generates three falsifiable predictions:
   \item \textbf{Temperature sweep}: Varying culture temperature
     between \SIrange{25}{42}{\celsius} should produce a
     non-monotonic MC curve if ENAQT is operative.
+    Based on the dephasing-to-temperature mapping used here,
+    the ENAQT peak corresponds to a temperature above
+    \SI{37}{\celsius} (approximately \SIrange{40}{45}{\celsius}
+    for the present Hamiltonian parameters); the non-monotonic
+    turnover should therefore appear \emph{above} physiological
+    temperature.
     Classical models predict monotonic degradation with
     increasing noise.
   \item \textbf{Magnetic field}: An external magnetic field
@@ -593,10 +639,23 @@ Neuroplatform, enabling the predictions above to be tested
 on living neural tissue.
 
 % ============================================================
+\section*{Data and Code Availability}
+All simulation code, analysis scripts, and generated data are
+available at
+\url{https://github.com/unearthlyimprint/Biological-Computing}.
+No experimental data were generated in this study; all results
+are from computational simulations reproducible from the
+provided code.
+
+% ============================================================
 \section*{Acknowledgments}
 Computational resources provided by a private compute cluster.
 Simulations used BRIAN2~\cite{Stimberg2019} and
 QuTiP~\cite{Johansson2012,Johansson2013}.
+
+% ============================================================
+\section*{Competing Interests}
+The author declares no competing interests.
 
 % ============================================================
 \bibliographystyle{unsrtnat}
