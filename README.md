@@ -1,48 +1,104 @@
-# Biological Computing — Organoid Intelligence
+# Quantum Effects in Biological Computing
 
-Research project exploring wetware computing: living neurons grown in petri dishes as biological CPUs, simulation of spiking neural networks, and the feasibility of quantum effects in warm, wet neuronal systems.
+Computational investigation of whether quantum-mechanical effects—tunnelling delays, nuclear-spin coherence, and environment-assisted quantum transport (ENAQT)—can enhance neural computation. Five experiments trace a quantitative pathway from sub-molecular quantum dynamics to network-level computational capacity.
+
+**Preprint:** [manuscript/manuscript.pdf](manuscript/manuscript.pdf)
+
+---
+
+## Key Finding
+
+When the ENAQT transport efficiency of a model ion channel is used as the synaptic release probability in a reservoir computing network, the network's memory capacity **co-peaks** with the ENAQT curve (Pearson *r* = 0.98). Quantum-enhanced molecular transport directly translates into quantum-enhanced network computation.
+
+---
+
+## Experiments
+
+| # | Title | Tools | Key Result |
+|---|-------|-------|------------|
+| **1a** | Quantum-modified synaptic delays | BRIAN2 | CV_ISI +44%, Fano factor +89% vs. classical fixed delays |
+| **1b** | Posner ³¹P spin dynamics | QuTiP | Coherence survives 346 µs at body temperature (310 K) |
+| **1c** | ENAQT in a model ion channel | QuTiP | ENAQT peak at γ ≈ 1145 cm⁻¹, 6.7× over coherent limit |
+| **1d** | Reservoir computing: quantum vs. classical noise | NumPy | Quantum (Cauchy) noise preserves MC 5.7× better at high amplitude |
+| **1e** | ENAQT-modulated reservoir computing | QuTiP + ESN | MC peak coincides with ENAQT peak across dephasing sweep |
+
+---
 
 ## Repository Structure
 
 ```
 .
-├── docs/                    # Research reports & analysis
-│   └── research_report.md   # Comprehensive state-of-the-art review
-├── simulations/             # Computational models
-│   ├── requirements.txt     # Python dependencies (brian2, etc.)
-│   └── brian2_spiking_demo.py  # Leaky integrate-and-fire network
-├── notes/                   # Working notes & considerations
+├── manuscript/
+│   ├── manuscript.tex          # LaTeX source (bioRxiv preprint)
+│   ├── manuscript.pdf          # Compiled PDF
+│   └── references.bib          # BibTeX bibliography
+├── simulations/
+│   ├── experiment_1a_quantum_delays.py
+│   ├── experiment_1b_posner_spins.py
+│   ├── experiment_1c_enaqt_ion_channel.py
+│   ├── experiment_1d_reservoir_noise.py
+│   ├── experiment_1e_enaqt_reservoir.py
+│   ├── quantum_delay_model.py  # WKB tunnelling delay model
+│   ├── brian2_spiking_demo.py  # Introductory LIF demo
+│   ├── experiment_*_results.png  # Dashboard figures
+│   ├── experiment_*_metrics.json # Machine-readable results
+│   └── requirements.txt
+├── docs/
+│   └── research_report.md      # Literature review & background
+├── notes/
 │   └── quantum_biology_considerations.md
-├── references/              # Links, papers, APIs
-│   └── resources.md
-└── README.md
+└── references/
+    └── resources.md
 ```
 
-## Key Players (as of March 2026)
+---
 
-| Organisation | Product | Status |
-|---|---|---|
-| **Cortical Labs** (AU) | CL1 biological computer, biOS, Cortical Cloud | Commercial — shipping since June 2025 |
-| **FinalSpark** (CH) | Neuroplatform (16 organoids) | Research access available |
-| **Johns Hopkins** (US) | Organoid Intelligence initiative | Academic — learning/memory demonstrated |
-| **UC Santa Cruz** (US) | Cart-pole benchmark with organoids | Academic — real-time processing (2026) |
-
-## Quick Start — Simulation
+## Quick Start
 
 ```bash
 cd simulations/
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python brian2_spiking_demo.py
+
+# Run any experiment (each is self-contained)
+python experiment_1a_quantum_delays.py
+python experiment_1b_posner_spins.py
+python experiment_1c_enaqt_ion_channel.py
+python experiment_1d_reservoir_noise.py
+python experiment_1e_enaqt_reservoir.py
 ```
 
-## Topics Covered
+**Dependencies:** Python 3.11+, BRIAN2, QuTiP, NumPy, SciPy, Matplotlib
 
-- **Wetware Computing** — how neurons on MEA chips compute
-- **Programming Interfaces** — Cortical Labs Python SDK, Cortical Cloud, FinalSpark Neuroplatform
-- **Spiking Neural Network Simulation** — BRIAN2, NEST, NEURON
-- **Quantum Biology** — decoherence in warm/wet, Posner molecules, Orch-OR debate
+---
+
+## Falsifiable Predictions
+
+The model generates three predictions testable on organoid platforms (Cortical Labs, FinalSpark):
+
+1. **Isotope effect** — replacing H₂O with D₂O should shift computational capacity
+2. **Temperature sweep** — non-monotonic MC curve between 25–42 °C if ENAQT is operative
+3. **Magnetic field** — ~1 mT external field should modulate Posner coherence and network dynamics
+
+---
+
+## Citation
+
+If you use this work, please cite:
+
+```bibtex
+@article{Arda2026quantum,
+  author  = {Arda, Celal},
+  title   = {Quantum Effects in Biological Computing: A Computational
+             Investigation of Neural Transport, Coherence, and
+             Reservoir Capacity},
+  year    = {2026},
+  note    = {Preprint}
+}
+```
+
+---
 
 ## License
 
-Private research — all rights reserved.
+All rights reserved. Contact celal.arda@outlook.de for collaboration inquiries.
