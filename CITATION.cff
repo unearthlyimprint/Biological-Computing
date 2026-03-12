@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Quantum Effects in Biological Computing: A Computational Investigation of Neural Transport, Coherence, and Reservoir Capacity"
+authors:
+  - family-names: "Arda"
+    given-names: "Celal"
+    orcid: "https://orcid.org/0009-0006-4563-8325"
+    email: "celal.arda@outlook.de"
+repository-code: "https://github.com/unearthlyimprint/Biological-Computing"
+license: MIT
+date-released: "2025-03-12"
+keywords:
+  - quantum biology
+  - ENAQT
+  - reservoir computing
+  - Posner molecules
+  - ion channels
+  - spiking neural networks
+  - computational neuroscience
+abstract: >-
+  Simulation code for five computational experiments investigating
+  whether quantum-mechanical effects (tunnelling delays, nuclear-spin
+  coherence, environment-assisted quantum transport) can enhance
+  neural computation. Includes spiking-network simulations (BRIAN2),
+  open-quantum-system dynamics (QuTiP), and echo-state networks.

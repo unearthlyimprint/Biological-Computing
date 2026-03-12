@@ -197,9 +197,16 @@ Decoherence is modelled by pure dephasing ($\gamma_2$) and
 longitudinal relaxation ($T_1$).
 We sweep $\gamma_2$ from \SI{10}{\hertz} to \SI{e6}{\hertz}
 and map temperature (\SIrange{4}{310}{\kelvin}) to dephasing
-rate via $\gamma_2 = \kB T / (\hbar \cdot T_1)$ with
+rate via the phenomenological linear scaling
+$\gamma_2(T) = \gamma_2^{\mathrm{ref}} \cdot T / T_{\mathrm{ref}}$,
+with $\gamma_2^{\mathrm{ref}} = \SI{1000}{\hertz}$ at
+$T_{\mathrm{ref}} = \SI{310}{\kelvin}$ and
 $T_1 = \SI{5}{\second}$.
-This $T_1$ value is based on bulk $^{31}$P NMR measurements
+This calibration places the body-temperature dephasing rate
+at \SI{1000}{\hertz}, consistent with the thermal
+phonon population scaling $\gamma_2 \propto T$ expected
+for nuclear spin--lattice interactions.
+The $T_1$ value is based on bulk $^{31}$P NMR measurements
 of biological phosphate; it should be regarded as an optimistic
 assumption, since $T_1$ for nuclear spins in the specific cage
 geometry of a Posner cluster has not been measured directly.
@@ -399,8 +406,8 @@ fully incoherent limit ($\Pfour = 5.1 \times 10^{-4}$).
 
 At body temperature (\SI{310}{\kelvin}), the thermal dephasing
 rate maps to $\gamma_{\mathrm{body}} \approx \SI{215}{cm^{-1}}$,
-yielding $\Pfour = 0.180$.  This is \emph{near} the ENAQT peak
-(ratio 0.19 of optimal), suggesting that biology operates in
+yielding $\Pfour = 0.180$---43\% of the optimal transport
+efficiency ($0.180 / 0.418 = 0.43$).  Biology thus operates in
 the ascending slope of the ENAQT curve rather than at the summit
 (Fig.~\ref{fig:1c}).
 
@@ -524,8 +531,9 @@ performance within those constraints.
 
 At body temperature (\SI{310}{\kelvin}), the thermal dephasing
 rate places biology at $\gamma \approx \SI{215}{cm^{-1}}$,
-which is on the ascending slope of the ENAQT curve with 19\%
-of the optimal efficiency.  This raises the question of why
+which is on the ascending slope of the ENAQT curve with 43\%
+of the optimal transport efficiency
+($\Pfour = 0.180 / 0.418 = 0.43$).  This raises the question of why
 evolution has not tuned the biological operating point to the
 ENAQT summit.  Several factors may contribute:
 (i)~structured (non-Markovian) spectral densities of the
@@ -536,7 +544,7 @@ channel may lie closer to the biological temperature;
 selectivity filters alter the effective Hamiltonian;
 and (iii)~the biological temperature is constrained by many
 fitness pressures beyond ion-channel transport.
-Thus the 19\% figure likely understates the proximity of
+Thus the 43\% figure likely understates the proximity of
 biology to its \emph{effective} quantum ridge---the
 ENAQT optimum of the full, structured environment.
 
@@ -656,6 +664,11 @@ QuTiP~\cite{Johansson2012,Johansson2013}.
 % ============================================================
 \section*{Competing Interests}
 The author declares no competing interests.
+
+% ============================================================
+\section*{Ethics Statement}
+Not applicable.  This is a purely computational study and
+involves no human or animal subjects.
 
 % ============================================================
 \bibliographystyle{unsrtnat}
