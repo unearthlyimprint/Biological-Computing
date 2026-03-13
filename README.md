@@ -23,6 +23,9 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 | **1c** | ENAQT in a model ion channel | QuTiP | ENAQT peak at γ ≈ 1145 cm⁻¹, 6.7× over coherent limit |
 | **1d** | Reservoir computing: quantum vs. classical noise | NumPy | Quantum (Cauchy) noise preserves MC 5.7× better at high amplitude |
 | **1e** | ENAQT-modulated reservoir computing | QuTiP + ESN | MC peak coincides with ENAQT peak across dephasing sweep |
+| **2a** | BNN reservoir computing baseline | CL SDK | Baseline MC ≈ 0.003 on Poisson simulator (64-channel BNN) |
+| **2b** | ENAQT-gated BNN reservoir | CL SDK | ENAQT gating reproduces stim-scaling on simulated BNN |
+| **2c** | Temperature sweep prediction test | CL SDK | MC in noise floor for both ENAQT and classical on simulator — designed for real hardware validation |
 
 ---
 
@@ -40,13 +43,17 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 │   ├── experiment_1c_enaqt_ion_channel.py
 │   ├── experiment_1d_reservoir_noise.py
 │   ├── experiment_1e_enaqt_reservoir.py
+│   ├── experiment_2a_bnn_baseline.py
+│   ├── experiment_2b_enaqt_bnn.py
+│   ├── experiment_2c_temperature_sweep.py
 │   ├── quantum_delay_model.py  # WKB tunnelling delay model
 │   ├── brian2_spiking_demo.py  # Introductory LIF demo
 │   ├── experiment_*_results.png  # Dashboard figures
 │   ├── experiment_*_metrics.json # Machine-readable results
 │   └── requirements.txt
 ├── docs/
-│   └── research_report.md      # Literature review & background
+│   ├── research_report.md      # Literature review & background
+│   └── phase2_cl_sdk_plan.md   # Phase 2 experiment plan
 ├── notes/
 │   └── quantum_biology_considerations.md
 └── references/
@@ -70,7 +77,7 @@ python experiment_1d_reservoir_noise.py
 python experiment_1e_enaqt_reservoir.py
 ```
 
-**Dependencies:** Python 3.11+, BRIAN2, QuTiP, NumPy, SciPy, Matplotlib
+**Dependencies:** Python 3.11+, BRIAN2, QuTiP, NumPy, SciPy, Matplotlib, CL SDK (`pip install cl-sdk`)
 
 ---
 
