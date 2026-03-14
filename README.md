@@ -35,7 +35,7 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 ```
 .
 ├── manuscript/
-│   ├── manuscript.tex          # LaTeX source (bioRxiv preprint)
+│   ├── manuscript.tex          # LaTeX source (Zenodo preprint)
 │   ├── manuscript.pdf          # Compiled PDF
 │   └── references.bib          # BibTeX bibliography
 ├── simulations/
