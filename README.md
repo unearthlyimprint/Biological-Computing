@@ -26,6 +26,7 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 | **2a** | BNN reservoir computing baseline | CL SDK | Baseline MC ≈ 0.003 on Poisson simulator (64-channel BNN) |
 | **2b** | ENAQT-gated BNN reservoir | CL SDK | ENAQT gating reproduces stim-scaling on simulated BNN |
 | **2c** | Temperature sweep prediction test | CL SDK | MC in noise floor for both ENAQT and classical on simulator — designed for real hardware validation |
+| **2d** | Closed-loop spike-triggered ENAQT | CL SDK | Closed-loop feedback enhances MC only at ENAQT-optimal p_rel (Δ=+0.008) |
 
 ---
 
@@ -46,6 +47,7 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 │   ├── experiment_2a_bnn_baseline.py
 │   ├── experiment_2b_enaqt_bnn.py
 │   ├── experiment_2c_temperature_sweep.py
+│   ├── experiment_2d_closed_loop_enaqt.py
 │   ├── quantum_delay_model.py  # WKB tunnelling delay model
 │   ├── brian2_spiking_demo.py  # Introductory LIF demo
 │   ├── experiment_*_results.png  # Dashboard figures
