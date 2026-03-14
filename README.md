@@ -27,6 +27,8 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 | **2b** | ENAQT-gated BNN reservoir | CL SDK | ENAQT gating reproduces stim-scaling on simulated BNN |
 | **2c** | Temperature sweep prediction test | CL SDK | MC in noise floor for both ENAQT and classical on simulator — designed for real hardware validation |
 | **2d** | Closed-loop spike-triggered ENAQT | CL SDK | Closed-loop feedback enhances MC only at ENAQT-optimal p_rel (Δ=+0.008) |
+| **3a** | D₂O isotope effect on ENAQT | QuTiP | D₂O reduces P₄ by 32.2% at 310 K; dose-response across D₂O/H₂O mixtures |
+| **3b** | Magnetic field modulation of Posner coherence | NumPy | Uniform B-field preserves singlet: ω_L/J = 345× but Δτ ≈ 0 (important null) |
 
 ---
 
@@ -48,6 +50,9 @@ When the ENAQT transport efficiency of a model ion channel is used as the synapt
 │   ├── experiment_2b_enaqt_bnn.py
 │   ├── experiment_2c_temperature_sweep.py
 │   ├── experiment_2d_closed_loop_enaqt.py
+│   ├── experiment_3a_isotope_effect.py
+│   ├── experiment_3b_magnetic_field.py
+│   ├── experiment_summary_dashboard.py
 │   ├── quantum_delay_model.py  # WKB tunnelling delay model
 │   ├── brian2_spiking_demo.py  # Introductory LIF demo
 │   ├── experiment_*_results.png  # Dashboard figures
