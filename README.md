@@ -1,10 +1,10 @@
 # Quantum Effects in Biological Computing
 
-![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white) ![BRIAN2](https://img.shields.io/badge/BRIAN2-2.x-4B8BBE) ![QuTiP](https://img.shields.io/badge/QuTiP-5.x-E34F26) ![License MIT](https://img.shields.io/badge/License-MIT-10b981)
+![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white) ![BRIAN2](https://img.shields.io/badge/BRIAN2-2.x-4B8BBE) ![QuTiP](https://img.shields.io/badge/QuTiP-5.x-E34F26) ![License MIT](https://img.shields.io/badge/License-MIT-10b981) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19019549.svg)](https://doi.org/10.5281/zenodo.19019549)
 
 Computational investigation of whether quantum-mechanical effects—tunnelling delays, nuclear-spin coherence, and environment-assisted quantum transport (ENAQT)—can enhance neural computation. Five experiments trace a quantitative pathway from sub-molecular quantum dynamics to network-level computational capacity.
 
-**Preprint:** [manuscript/manuscript.pdf](manuscript/manuscript.pdf)
+**Preprint:** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19019549.svg)](https://doi.org/10.5281/zenodo.19019549) · [PDF](manuscript/manuscript.pdf)
 
 ---
 
