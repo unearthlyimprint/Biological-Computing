@@ -45,12 +45,25 @@ SDO_CMAP = LinearSegmentedColormap.from_list(
 # LINDBLAD MASTER EQUATION SOLVER (GPU)
 # ============================================================================
 
-def build_chain_hamiltonian(n_sites, coupling, dtype=torch.complex64):
-    """Build nearest-neighbor tight-binding Hamiltonian for ion channel."""
-    H = torch.zeros(n_sites, n_sites, dtype=dtype, device=DEVICE)
+def build_chain_hamiltonian(n_sites, coupling, site_energies=None, dtype=torch.complex64):
+    """Build donor-bridge-acceptor Hamiltonian for ion channel ENAQT.
+    Includes an extra trap state (index n_sites) decoupled from H.
+    
+    Default site energies: [0, 15, 15, 0] (in units of J).
+    Bridge height 15J creates tunnelling barrier; dephasing helps overcome it.
+    """
+    dim = n_sites + 1  # extra trap state
+    H = torch.zeros(dim, dim, dtype=dtype, device=DEVICE)
+    # Site energies (diagonal)
+    if site_energies is None:
+        site_energies = [0.0] + [15.0] * (n_sites - 2) + [0.0]  # bridge height = 15J
+    for i in range(n_sites):
+        H[i, i] = site_energies[i]
+    # Nearest-neighbour hopping (off-diagonal)
     for i in range(n_sites - 1):
         H[i, i+1] = coupling
         H[i+1, i] = coupling
+    # trap state (index n_sites) has zero coupling — purely absorbing
     return H
 
 
@@ -90,14 +103,16 @@ def run_enaqt_sweep(n_sites=5, n_gammas=500, coupling=100.0, t_max=2.0, dt=0.001
     print("=" * 60)
     
     # Dephasing rates to sweep (cm^-1)
-    gammas = torch.linspace(0.01, 50.0, n_gammas, device=DEVICE)
+    gammas = torch.linspace(0.01, 500.0, n_gammas, device=DEVICE)  # in units of J
     
-    # Hamiltonian (same for all gammas)
+    dim = n_sites + 1  # include trap state
+    
+    # Hamiltonian (same for all gammas, trap state decoupled)
     H = build_chain_hamiltonian(n_sites, coupling, dtype=torch.complex64)
-    H = H.unsqueeze(0).expand(n_gammas, -1, -1)  # [n_gammas, n, n]
+    H = H.unsqueeze(0).expand(n_gammas, -1, -1)  # [n_gammas, dim, dim]
     
     # Initial state: excitation at site 0
-    rho = torch.zeros(n_gammas, n_sites, n_sites, dtype=torch.complex64, device=DEVICE)
+    rho = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
     rho[:, 0, 0] = 1.0
     
     n_steps = int(t_max / dt)
@@ -108,22 +123,21 @@ def run_enaqt_sweep(n_sites=5, n_gammas=500, coupling=100.0, t_max=2.0, dt=0.001
     
     t0 = time.time()
     # Trapping rate at target site (irreversible sink)
-    trap_rate = 1.0
+    trap_rate = 0.05  # κ = 0.05J (weak extraction, ratio matches original κ/J)
     trapped_pop = torch.zeros(n_gammas, device=DEVICE)  # accumulated at sink
     
     for step in range(n_steps):
         # Build dephasing Lindblad operators for each gamma (batched)
         L_ops = []
-        for site in range(n_sites):
-            L = torch.zeros(n_gammas, n_sites, n_sites, dtype=torch.complex64, device=DEVICE)
+        for site in range(n_sites):  # dephasing on physical sites only
+            L = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
             L[:, site, site] = torch.sqrt(gammas)
             L_ops.append(L)
         
-        # Add trapping at site n_sites-1 (the target)
-        # This removes population irreversibly, simulating reaction center
-        L_trap = torch.zeros(n_gammas, n_sites, n_sites, dtype=torch.complex64, device=DEVICE)
-        # Trapping operator: |0><target| (moves pop to ground/sink)
-        L_trap[:, 0, n_sites-1] = trap_rate ** 0.5
+        # Trapping: |trap><target| — irreversibly moves population to external sink
+        L_trap = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
+        L_trap[:, n_sites, n_sites-1] = trap_rate ** 0.5  # |trap><target|
+        # This is the key: population goes to state n_sites (trap) and never returns
         L_ops.append(L_trap)
         
         # Record trapped population before step
@@ -146,9 +160,8 @@ def run_enaqt_sweep(n_sites=5, n_gammas=500, coupling=100.0, t_max=2.0, dt=0.001
     elapsed = time.time() - t0
     print(f"  Total: {elapsed:.1f}s ({n_gammas * n_steps / elapsed:.0f} evals/s)")
     
-    # Final P_4 for all gammas
-    # Final transport efficiency = trapped population (integrated flux through sink)
-    P4_final = trapped_pop.cpu().numpy()
+    # Transport efficiency = population accumulated in trap state
+    P4_final = rho[:, n_sites, n_sites].real.cpu().numpy()  # trap state population
     gammas_np = gammas.cpu().numpy()
     
     # Find ENAQT peak
@@ -255,7 +268,7 @@ if __name__ == "__main__":
     print("=" * 60)
     
     t0 = time.time()
-    data = run_enaqt_sweep(n_sites=5, n_gammas=500, coupling=1.0, t_max=10.0, dt=0.001)
+    data = run_enaqt_sweep(n_sites=4, n_gammas=500, coupling=1.0, t_max=20.0, dt=0.002)
     plot_enaqt_results(data)
     
     print(f"\nTotal wall time: {time.time()-t0:.1f}s")
