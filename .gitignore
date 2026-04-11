@@ -63,3 +63,10 @@ manuscript/*.blg
 manuscript/*.log
 manuscript/*.out
 manuscript/*.synctex.gz
+# Exclude large model binaries
+*.pt
+*.pth
+*.onnx
+*.h5
+the_well_surrogate/fno_checkpoints/
+the_well_surrogate/well_data/
