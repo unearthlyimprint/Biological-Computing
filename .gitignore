@@ -77,3 +77,4 @@ simulations/worker_research/
 PROJECT_REVIEW.md
 simulations/results/
 notes/
+*.bak*
