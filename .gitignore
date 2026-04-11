@@ -71,3 +71,4 @@ manuscript/*.synctex.gz
 the_well_surrogate/fno_checkpoints/
 the_well_surrogate/well_data/
 the_well_surrogate/
+neural_surrogates/
