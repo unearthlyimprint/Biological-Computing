@@ -70,3 +70,4 @@ manuscript/*.synctex.gz
 *.h5
 the_well_surrogate/fno_checkpoints/
 the_well_surrogate/well_data/
+the_well_surrogate/
