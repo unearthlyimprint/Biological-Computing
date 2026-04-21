@@ -5,28 +5,41 @@ experiment_3b_magnetic_field.py — Magnetic Field Modulation of Posner Coherenc
 
 Phase 3, Experiment 3b of the Biological Computing research programme.
 
-Tests the falsifiable prediction: an external magnetic field (~1 mT)
-should modulate ³¹P Larmor frequency in Posner molecules, altering
-coherence times and calcium-dependent processes.
+Tests the falsifiable prediction: an external magnetic field (~0.1–10 mT)
+modulates ³¹P nuclear coherence in Posner molecules by driving
+singlet ⟷ triplet-zero mixing through chemical-shift inequivalence.
 
-Physics:
-  - ³¹P gyromagnetic ratio: γ_P = 17.235 MHz/T
-  - At B = 0 (Earth's field ~50 µT): ω_L ≈ 862 Hz
-  - At B = 1 mT: ω_L ≈ 17.235 kHz
-  - Zeeman splitting adds to the Hamiltonian: H_Z = -γ_P B Σ I_zi
+Physics
+-------
+  - ³¹P gyromagnetic ratio γ_P = 17.235 MHz/T.
+  - Two ³¹P nuclei modelled with a small chemical-shift inequivalence
+    δσ ≈ 10⁻³ (~1000 ppm), representing symmetry breaking by the
+    surrounding protein/water environment. A perfectly symmetric pair
+    has no B-dependence because the singlet is an eigenstate of both
+    Zeeman and isotropic dipolar terms; δσ ≠ 0 is what makes the test
+    physical.
+  - Hamiltonian (angular-frequency units, rad/s):
+        H = ω_L (S1z + S2z) + δ (S1z − S2z) + ω_J (S1·S2)
+    where ω_L = 2π γ_P B, δ = δσ · ω_L, ω_J = 2π J.
+  - In the {|S⟩,|T₀⟩} subspace, δ is off-diagonal and ω_J is diagonal,
+    so the singlet ⟷ triplet-zero oscillation rate is
+        Ω = 2√((ω_J/2)² + δ²),
+    transferring amplitude δ²/((ω_J/2)² + δ²) of the population.
+  - Low B (δ ≪ ω_J/2): weak mixing, γ₂ = 1/T₂ sets τ_c.
+  - High B (δ ≳ ω_J/2): fast S↔T₀ mixing drains singlet population
+    well before γ₂ kicks in; τ_c drops sharply.
+  - Transition at B_trans ≈ J / (2 γ_P δσ).
 
-Method:
-  1. Extend the Posner model (Exp 1b) with Zeeman coupling
-  2. Sweep B from 0 to 10 mT
-  3. Measure coherence time τ_c at each field strength
-  4. Map the B-field dependence at body temperature (310 K)
+Method
+------
+  1. Sweep B from 0 to 10 mT (with 50 µT Earth baseline).
+  2. Evolve the singlet fidelity under unitary H and apply a
+     γ₂ dephasing envelope.
+  3. Record τ_c (1/e drop of the envelope) at each B.
+  4. Repeat at fixed B = 1 mT across a temperature range (T₁ ∝ 1/T).
 
-Prediction:
-  - Non-zero B should alter coherence time
-  - At ~1 mT, Larmor frequency becomes comparable to dipolar coupling
-  - This should produce a measurable change in τ_c
-
-Outputs:
+Outputs
+-------
     experiment_3b_results.png    (6-panel dashboard)
     experiment_3b_metrics.json   (full numerical results)
 """
@@ -57,6 +70,14 @@ HBAR = 1.0545718e-34  # J·s
 # Dipolar coupling (from Experiment 1b)
 J_DIPOLAR_HZ = 50.0  # Hz coupling between adjacent spins
 
+# Chemical-shift inequivalence between the two ³¹P sites. Taken as a
+# fraction of the Larmor frequency (δ = δσ · ω_L), so the singlet ↔
+# triplet-zero mixing rate scales linearly with B. δσ ≈ 10⁻³ (1000 ppm)
+# is on the upper end of what a solvated, symmetry-broken Posner pair
+# might sustain — chosen so the J/δ crossover lies inside the swept
+# B range rather than beyond it.
+CHEM_SHIFT_FRAC = 1e-3
+
 # Body temperature parameters (from Experiment 1b)
 T1_310K = 0.5  # s (spin-lattice at 310 K)
 GAMMA_2_310K = 2.0 / T1_310K  # Hz (transverse relaxation)
@@ -77,86 +98,87 @@ TEMPERATURES_K = np.array([4, 50, 100, 150, 200, 250, 280, 300,
 
 def build_hamiltonian_2spin(J_Hz, B_T):
     """
-    Build 2-spin-½ Hamiltonian with dipolar coupling + Zeeman.
+    Build 2-spin-½ Hamiltonian (angular-frequency units, rad/s).
 
-    H = J (σ1·σ2) + ω_L (σ1z + σ2z)
+        H = ω_L (S1z + S2z)        # common Zeeman
+          + δ   (S1z − S2z)        # chemical-shift inequivalence
+          + ω_J (S1·S2)            # isotropic dipolar coupling
 
-    where ω_L = 2π × γ_P × B
+    with ω_L = 2π γ_P B, δ = CHEM_SHIFT_FRAC · ω_L, ω_J = 2π J_Hz.
+    Without the δ term the singlet is an eigenstate of every other
+    piece of H and the test has no B-dependence.
     """
-    # Pauli matrices
+    # Pauli matrices (spin-½ operators)
     sx = np.array([[0, 1], [1, 0]], dtype=complex) / 2
     sy = np.array([[0, -1j], [1j, 0]], dtype=complex) / 2
     sz = np.array([[1, 0], [0, -1]], dtype=complex) / 2
     I2 = np.eye(2, dtype=complex)
 
-    # Two-spin operators
-    S1x = np.kron(sx, I2)
-    S1y = np.kron(sy, I2)
-    S1z = np.kron(sz, I2)
-    S2x = np.kron(I2, sx)
-    S2y = np.kron(I2, sy)
-    S2z = np.kron(I2, sz)
+    S1x = np.kron(sx, I2); S1y = np.kron(sy, I2); S1z = np.kron(sz, I2)
+    S2x = np.kron(I2, sx); S2y = np.kron(I2, sy); S2z = np.kron(I2, sz)
 
-    # Dipolar coupling: J (S1·S2)
-    H_J = J_Hz * (S1x @ S2x + S1y @ S2y + S1z @ S2z)
-
-    # Zeeman: ω_L (S1z + S2z)
     omega_L = 2 * np.pi * GAMMA_P31_MHZ_PER_T * 1e6 * B_T
-    H_Z = omega_L * (S1z + S2z)
+    delta = CHEM_SHIFT_FRAC * omega_L
+    omega_J = 2 * np.pi * J_Hz
 
-    return H_J + H_Z
+    H_Z = omega_L * (S1z + S2z) + delta * (S1z - S2z)
+    H_J = omega_J * (S1x @ S2x + S1y @ S2y + S1z @ S2z)
+
+    return H_Z + H_J
 
 
-def compute_coherence(J_Hz, B_T, gamma_2_Hz, n_steps=4000):
+def compute_coherence(J_Hz, B_T, gamma_2_Hz, n_steps=8000):
     """
-    Compute coherence time for 2-spin Posner model at given B-field.
+    Compute coherence time for the 2-spin Posner model at given B.
 
-    Tracks the fidelity of the initial singlet state under Hamiltonian
-    evolution with exponential dephasing.  The fidelity oscillates due
-    to Zeeman-induced mixing, and the envelope decays with γ₂.
-    Returns τ_c (time to 1/e of peak fidelity) in seconds.
+    Evolves the singlet under the (inequivalent) Hamiltonian H from
+    ``build_hamiltonian_2spin`` and multiplies the unitary fidelity
+    ⟨S|ρ(t)|S⟩ by exp(−γ₂ t) to model Markovian transverse relaxation.
+    Returns τ_c, the time at which the envelope first drops to 1/e
+    of its initial value.
+
+    The time grid is chosen to resolve the fastest oscillation set by
+    ω_L·δσ and ω_J (≥ 20 points/period) while capping total length
+    at 5/γ₂ or 1 s — whichever is smaller.
     """
     H = build_hamiltonian_2spin(J_Hz, B_T)
-    dim = H.shape[0]
 
-    # Initial state: singlet |S⟩ = (|↑↓⟩ - |↓↑⟩)/√2
     psi0 = np.array([0, 1, -1, 0], dtype=complex) / np.sqrt(2)
     rho0 = np.outer(psi0, psi0.conj())
 
-    # Time array — cover several oscillation periods
-    omega_L = 2 * np.pi * GAMMA_P31_MHZ_PER_T * 1e6 * B_T
+    omega_L = abs(2 * np.pi * GAMMA_P31_MHZ_PER_T * 1e6 * B_T)
+    delta = CHEM_SHIFT_FRAC * omega_L
     omega_J = 2 * np.pi * J_Hz
+    # Mixing frequency in the {|S⟩,|T₀⟩} block sets the fastest scale
+    # we need to resolve; fall back to 1 rad/s to avoid div-by-zero.
+    omega_mix = 2.0 * np.sqrt((omega_J / 2) ** 2 + delta ** 2)
+    freq_max = max(omega_mix, omega_J, 1.0)
 
-    # Characteristic frequencies
-    freq_max = max(omega_L, omega_J, gamma_2_Hz, 1.0)
     t_max = min(5.0 / max(gamma_2_Hz, 0.1), 1.0)
-    times = np.linspace(0, t_max, n_steps)
+    period_min = 2 * np.pi / freq_max
+    n_needed = max(n_steps, int(np.ceil(t_max / (period_min / 20))))
+    n_needed = min(n_needed, 200_000)
+    times = np.linspace(0, t_max, n_needed)
 
-    # Track singlet fidelity
-    fidelity = np.zeros(n_steps)
-
+    envelope = np.zeros(n_needed)
     for i, t in enumerate(times):
-        U = expm(-1j * 2 * np.pi * H * t)
+        U = expm(-1j * H * t)
         rho_t = U @ rho0 @ U.conj().T
+        f = np.real(np.trace(rho0 @ rho_t))
+        envelope[i] = abs(f) * np.exp(-gamma_2_Hz * t)
 
-        # Singlet fidelity with dephasing envelope
-        f = abs(np.trace(rho0 @ rho_t))
-        fidelity[i] = f * np.exp(-gamma_2_Hz * t)
+    if envelope[0] == 0:
+        return 0.0, envelope, times
 
-    # Find τ_c: time to drop to 1/e of initial fidelity
-    if fidelity[0] == 0:
-        return 0.0, fidelity, times
-
-    target = fidelity[0] / np.e
-    below = np.where(fidelity < target)[0]
-
+    target = envelope[0] / np.e
+    below = np.where(envelope < target)[0]
     if len(below) == 0:
-        return float(times[-1]), fidelity, times
+        return float(times[-1]), envelope, times
 
     idx = below[0]
     if idx > 0:
         t1, t2 = times[idx - 1], times[idx]
-        c1, c2 = fidelity[idx - 1], fidelity[idx]
+        c1, c2 = envelope[idx - 1], envelope[idx]
         if c1 != c2:
             tau_c = t1 + (target - c1) * (t2 - t1) / (c2 - c1)
         else:
@@ -164,7 +186,7 @@ def compute_coherence(J_Hz, B_T, gamma_2_Hz, n_steps=4000):
     else:
         tau_c = times[0]
 
-    return float(tau_c), fidelity, times
+    return float(tau_c), envelope, times
 
 
 # ══════════════════════════════════════════════════
@@ -261,14 +283,21 @@ def main():
     print(f"  ◎ Elapsed: {elapsed:.1f} s")
     print(f"{'═' * 65}")
 
+    # Crossover field B_trans where δ(B) = ω_J/2 (singlet-triplet mixing
+    # rate equals the dipolar scale). τ_c should drop sharply around it.
+    B_trans_T = J_DIPOLAR_HZ / (2 * GAMMA_P31_MHZ_PER_T * 1e6 *
+                                CHEM_SHIFT_FRAC)
+
     # ── Save metrics ──
     metrics = {
         'experiment': '3b_magnetic_field',
         'physics': {
             'gamma_P31_MHz_per_T': GAMMA_P31_MHZ_PER_T,
             'J_dipolar_Hz': J_DIPOLAR_HZ,
+            'chem_shift_frac': CHEM_SHIFT_FRAC,
             'earth_field_uT': EARTH_FIELD_T * 1e6,
             'T1_310K': T1_310K,
+            'B_transition_mT': round(B_trans_T * 1e3, 4),
         },
         'b_field_sweep': {
             'B_mT': B_FIELDS_MT.tolist(),
@@ -445,9 +474,11 @@ def make_dashboard(metrics, output_path):
         f"MAGNETIC FIELD MODULATION OF ³¹P COHERENCE",
         f"",
         f"PARAMETERS:",
-        f"  γ(³¹P) = {phys['gamma_P31_MHz_per_T']} MHz/T",
-        f"  J_dipolar = {phys['J_dipolar_Hz']} Hz",
-        f"  Earth field = {phys['earth_field_uT']} µT",
+        f"  γ(³¹P)       = {phys['gamma_P31_MHz_per_T']} MHz/T",
+        f"  J_dipolar    = {phys['J_dipolar_Hz']} Hz",
+        f"  δσ (chem shift) = {phys['chem_shift_frac']:.0e}",
+        f"  Earth field  = {phys['earth_field_uT']} µT",
+        f"  B_transition = {phys['B_transition_mT']} mT",
         f"",
         f"AT 310 K:",
         f"  τ_c(B≈0)  = {comp['tau_zero_field_us']:.1f} µs",
@@ -457,8 +488,8 @@ def make_dashboard(metrics, output_path):
         f"  ω_L/J = {comp['larmor_dipolar_ratio']}×",
         f"",
         f"PREDICTION:",
-        f"  1 mT field alters {pred['effect_sign']}ly",
-        f"  ω_L >> J: Zeeman dominates coupling",
+        f"  δ·B drives S↔T₀ mixing; τ_c drops",
+        f"  sharply near B_transition",
         f"  Testable with low-cost Helmholtz coil",
     ]
 

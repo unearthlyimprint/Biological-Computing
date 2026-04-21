@@ -106,44 +106,37 @@ def run_enaqt_sweep(n_sites=5, n_gammas=500, coupling=100.0, t_max=2.0, dt=0.001
     gammas = torch.linspace(0.01, 500.0, n_gammas, device=DEVICE)  # in units of J
     
     dim = n_sites + 1  # include trap state
-    
+
     # Hamiltonian (same for all gammas, trap state decoupled)
     H = build_chain_hamiltonian(n_sites, coupling, dtype=torch.complex64)
     H = H.unsqueeze(0).expand(n_gammas, -1, -1)  # [n_gammas, dim, dim]
-    
+
     # Initial state: excitation at site 0
     rho = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
     rho[:, 0, 0] = 1.0
-    
+
     n_steps = int(t_max / dt)
-    
+
     # Track P_4 over time for a few representative gammas
     track_indices = [0, n_gammas//4, n_gammas//2, 3*n_gammas//4, n_gammas-1]
     time_traces = {i: [] for i in track_indices}
-    
-    t0 = time.time()
-    # Trapping rate at target site (irreversible sink)
+
+    # ── Build time-invariant Lindblad operators ONCE, outside the loop ──
+    # Dephasing (diagonal, γ-dependent)
+    sqrt_gammas = torch.sqrt(gammas)
+    L_ops = []
+    for site in range(n_sites):
+        L = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
+        L[:, site, site] = sqrt_gammas
+        L_ops.append(L)
+    # Irreversible trap: |trap⟩⟨target|, identical across γ
     trap_rate = 0.05  # κ = 0.05J (weak extraction, ratio matches original κ/J)
-    trapped_pop = torch.zeros(n_gammas, device=DEVICE)  # accumulated at sink
-    
+    L_trap = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
+    L_trap[:, n_sites, n_sites-1] = trap_rate ** 0.5
+    L_ops.append(L_trap)
+
+    t0 = time.time()
     for step in range(n_steps):
-        # Build dephasing Lindblad operators for each gamma (batched)
-        L_ops = []
-        for site in range(n_sites):  # dephasing on physical sites only
-            L = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
-            L[:, site, site] = torch.sqrt(gammas)
-            L_ops.append(L)
-        
-        # Trapping: |trap><target| — irreversibly moves population to external sink
-        L_trap = torch.zeros(n_gammas, dim, dim, dtype=torch.complex64, device=DEVICE)
-        L_trap[:, n_sites, n_sites-1] = trap_rate ** 0.5  # |trap><target|
-        # This is the key: population goes to state n_sites (trap) and never returns
-        L_ops.append(L_trap)
-        
-        # Record trapped population before step
-        p_target = rho[:, n_sites-1, n_sites-1].real
-        trapped_pop += p_target * trap_rate * dt
-        
         rho = lindblad_step(rho, H, L_ops, dt)
         
         # Track specific gammas

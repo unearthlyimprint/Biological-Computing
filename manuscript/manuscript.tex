@@ -66,9 +66,10 @@ transport (ENAQT)---can enhance neural computation.
 
 Using spiking-network simulations (BRIAN2), open-quantum-system
 dynamics (QuTiP), and echo-state networks (ESN), we find:
-(i)~quantum-tunnelling synaptic delays increase the coefficient
-of variation of inter-spike intervals by 44\% and the Fano factor
-by 89\% compared to classical fixed delays;
+(i)~quantum-tunnelling synaptic delays increase the mean firing
+rate by 16\% while reducing the coefficient of variation of
+inter-spike intervals by 8\% compared to classical fixed delays,
+consistent with faster tunnelling-mediated transmission;
 (ii)~$^{31}$P nuclear-spin coherence in a Posner-molecule model
 survives \SI{346}{\micro\second} at body temperature
 (\SI{310}{\kelvin});
@@ -172,8 +173,8 @@ Two conditions are compared:
     $d_{\mathrm{cl}} = \SI{1.5}{\milli\second}$.
   \item \textbf{Quantum}: delay drawn from a
     tunnelling-modified distribution with mean
-    $\langle d_{\mathrm{q}} \rangle = \SI{3.93}{\milli\second}$,
-    $\sigma = \SI{0.35}{\milli\second}$, derived from a
+    $\langle d_{\mathrm{q}} \rangle = \SI{0.57}{\milli\second}$,
+    $\sigma = \SI{0.07}{\milli\second}$, derived from a
     WKB tunnelling probability through a
     \SI{0.3}{\electronvolt} barrier.
 \end{itemize}
@@ -247,7 +248,12 @@ in the sink; we evaluate it at steady state.
 An echo-state network (ESN) with $N = 200$ reservoir nodes,
 spectral radius $\rho = 0.9$, input scaling $\alpha = 1.5$,
 and leak rate $\lambda = 0.3$ is driven by a uniform random
-input signal for 5\,000 time steps.
+input $u \sim U(0, 1)$ for 5\,000 time steps.
+The non-zero-mean input is required because the $\tanh$
+nonlinearity is an odd function: a zero-mean input would make
+every reservoir state odd in~$u$, rendering even-order targets
+(e.g.\ $u^2$) identically zero by symmetry and thus
+untestable for nonlinear capacity.
 Readout weights are trained by ridge regression
 ($\alpha_{\mathrm{ridge}} = 0.01$).
 
@@ -371,19 +377,23 @@ closed-loop MC versus $\gamma$.
 
 Table~\ref{tab:1a} summarises the spiking statistics under
 classical and quantum-delay conditions.
-Quantum-modified delays produce a 44\% increase in $\CVISI$
-($0.38 \to 0.55$) and an 89\% increase in Fano factor
-($6.02 \to 11.39$).  Mean firing rates decrease modestly
-(\SI{57.8}{\hertz} $\to$ \SI{50.4}{\hertz}) due to the
-longer mean delay.  Spike-train entropy remains near maximal
-in both conditions, confirming that the networks are active
-and not quiescent.
-
-The higher $\CVISI$ in the quantum condition indicates that
-tunnelling-distributed delays push the network toward a more
-variable, less clock-like firing regime~(Fig.~\ref{fig:1a}).
-The elevated Fano factor suggests burstier dynamics with
-longer-range temporal correlations.
+Quantum-tunnelling delays produce a 16\% increase in mean firing
+rate (\SI{57.8}{\hertz} $\to$ \SI{67.3}{\hertz}), consistent
+with faster synaptic transmission through the shorter delay
+distribution ($\langle d \rangle = \SI{0.57}{\milli\second}$
+vs.\ \SI{1.5}{\milli\second}).
+The population-mean $\CVISI$ \emph{decreases} by 8\%
+($0.381 \to 0.352$), and the Fano factor drops marginally
+($6.02 \to 5.87$), indicating that the tighter, faster delay
+distribution regularises aggregate firing
+patterns~(Fig.~\ref{fig:1a}).
+Notably, the \emph{spread} of per-neuron $\CVISI$ values
+more than doubles ($\sigma = 0.174 \to 0.443$), revealing
+heterogeneous sensitivity: while most neurons become more
+regular, a subset exhibits substantially increased variability
+under quantum-distributed delays.
+Spike-train entropy remains near maximal in both conditions,
+confirming that both networks are active and not quiescent.
 
 \begin{table}[b]
 \caption{\label{tab:1a}Spiking statistics for Experiment~1a.}
@@ -392,11 +402,11 @@ longer-range temporal correlations.
   \toprule
   Metric & Classical & Quantum \\
   \midrule
-  Spikes       & 92\,524     & 80\,663     \\
-  Rate (Hz)    & 57.83       & 50.41       \\
-  $\CVISI$     & $0.381 \pm 0.174$ & $0.550 \pm 0.180$ \\
-  Fano factor  & 6.023       & 11.391      \\
-  Entropy (bits) & 9.603     & 9.564       \\
+  Spikes       & 92\,524     & 107\,670    \\
+  Rate (Hz)    & 57.83       & 67.29       \\
+  $\CVISI$     & $0.381 \pm 0.174$ & $0.352 \pm 0.443$ \\
+  Fano factor  & 6.023       & 5.870       \\
+  Entropy (bits) & 9.603     & 9.596       \\
   \bottomrule
 \end{tabular}
 \vspace{0.3em}
@@ -567,19 +577,26 @@ Table~\ref{tab:1e} lists the MC values for the four named
 conditions.
 
 \begin{table}[b]
-\caption{\label{tab:1e}Memory capacity under ENAQT-modulated
-  synaptic gating (Experiment~1e).}
+\caption{\label{tab:1e}Linear (MC) and nonlinear (NLC) memory
+  capacity under ENAQT-modulated synaptic gating
+  (Experiment~1e).}
 \centering
-\begin{tabular}{lccc}
+\begin{tabular}{lcccccc}
   \toprule
-  Condition & $\gamma$ (\si{cm^{-1}}) & $p_{\mathrm{rel}}$ & MC \\
+  Condition & $\gamma$ & $p_{\mathrm{rel}}$
+    & MC & NLC($u^2$) & NLC($u \cdot u_{-1}$) \\
+  & (\si{cm^{-1}}) & & & & \\
   \midrule
-  Coherent       & 0.01   & 0.063 & 0.81 \\
-  Body temp.     & 215    & 0.180 & 1.54 \\
-  ENAQT peak     & 1\,145 & 0.418 & 2.37 \\
-  Full ($P{=}1$) & ---    & 1.000 & 6.69 \\
+  Coherent       & 0.01   & 0.063 & 0.33 & 0.47 & 0.61 \\
+  Body temp.     & 215    & 0.180 & 0.58 & 0.59 & 0.66 \\
+  ENAQT peak     & 1\,145 & 0.418 & 0.99 & 0.69 & 0.71 \\
+  Full ($P{=}1$) & ---    & 1.000 & 5.84 & 0.98 & 0.91 \\
   \bottomrule
 \end{tabular}
+\vspace{0.3em}
+\par\noindent\small NLC($u^2$) and NLC($u \cdot u_{-1}$) are
+the $R^2$ of readout against the squared and cross-delay
+nonlinear targets, respectively.
 \end{table}
 
 The dephasing sweep (Fig.~\ref{fig:1e}) shows that the MC
@@ -588,11 +605,21 @@ $\gamma$.  Both curves peak at $\gamma = \SI{1061}{cm^{-1}}$
 (the nearest sampled point to the continuous-model optimum
 of \SI{1145}{cm^{-1}}).
 
-The Pearson correlation between $\log(\Pfour)$ and
-$\log(\MC)$ across the sweep is $r = 0.98$, confirming a
+The Spearman rank correlation between $\Pfour$ and $\MC$
+across the sweep is $\rho = 0.99$ ($p < 10^{-34}$), confirming a
 near-monotonic relationship: quantum-enhanced molecular
 transport directly translates into quantum-enhanced
 computational capacity at the network level.
+
+Nonlinear memory capacity rises monotonically with
+$p_{\mathrm{rel}}$ across all four conditions
+(Table~\ref{tab:1e}).  Both NLC targets---the squared input
+$u^2$ and the cross-delay product $u \cdot u_{-1}$---peak
+at the same $\gamma = \SI{1061}{cm^{-1}}$ as the linear MC
+and the ENAQT curve.  The co-localisation of all three
+capacity measures with the transport-efficiency peak
+strengthens the case that ENAQT-optimal dephasing maximises
+both linear and nonlinear computational capacity.
 
 \begin{figure}[t]
   \includegraphics[width=\columnwidth]{../simulations/experiment_1e_results.png}

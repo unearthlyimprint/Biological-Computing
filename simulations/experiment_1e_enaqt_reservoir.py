@@ -91,10 +91,30 @@ N_DEPHASING_SWEEP = 40
 GAMMA_MIN_CM = 0.01
 GAMMA_MAX_CM = 1e5
 
-# Key dephasing regimes (from Experiment 1c results)
+# Key dephasing regimes — loaded from Experiment 1c's metrics file when
+# available so the two experiments stay in sync. Falls back to the values
+# that were current at the time of writing.
 GAMMA_COHERENT_CM = 0.01         # near-zero dephasing
-GAMMA_BODY_CM = 215.46           # body temperature (310 K)
-GAMMA_PEAK_CM = 1145.05          # ENAQT peak
+_FALLBACK_GAMMA_BODY_CM = 215.46
+_FALLBACK_GAMMA_PEAK_CM = 1145.05
+
+
+def _load_1c_constants():
+    """Return (gamma_body_cm, gamma_peak_cm) from experiment_1c_metrics.json,
+    or the fallback values if the file is missing or malformed."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "experiment_1c_metrics.json")
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        body = float(data["body_temperature_assessment"]["gamma_body_cm"])
+        peak = float(data["enaqt_peak"]["optimal_dephasing_rate_cm"])
+        return body, peak
+    except (OSError, KeyError, ValueError, TypeError):
+        return _FALLBACK_GAMMA_BODY_CM, _FALLBACK_GAMMA_PEAK_CM
+
+
+GAMMA_BODY_CM, GAMMA_PEAK_CM = _load_1c_constants()
 
 
 # ══════════════════════════════════════════════════
@@ -266,7 +286,12 @@ def main():
     W_res = create_reservoir_weights(N_RESERVOIR, P_CONNECT,
                                       SPECTRAL_RADIUS, rng)
     W_in = rng.uniform(-W_INPUT_SCALE, W_INPUT_SCALE, N_RESERVOIR)
-    input_signal = rng.uniform(-0.5, 0.5, N_STEPS)
+    # Non-zero-mean input: a zero-mean input u combined with the odd tanh
+    # nonlinearity makes every reservoir state odd in u, which by symmetry
+    # forces any linear readout of even targets (e.g. u²) to have R² = 0
+    # independent of reservoir dynamics. Using u ~ U(0, 1) breaks the
+    # symmetry so nonlinear capacity is actually measurable.
+    input_signal = rng.uniform(0.0, 1.0, N_STEPS)
 
     actual_sr = np.max(np.abs(np.linalg.eigvals(W_res)))
     print(f"\n  Reservoir: {N_RESERVOIR} neurons, "

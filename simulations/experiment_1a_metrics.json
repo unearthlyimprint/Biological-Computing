@@ -10,8 +10,8 @@
     "particle_energy_eV": 0.1,
     "kappa_m_inv": 98176585520.97903,
     "classical_delay_ms": 1.5,
-    "quantum_delay_mean_ms": 3.928828803624492,
-    "quantum_delay_std_ms": 0.34973905243616965
+    "quantum_delay_mean_ms": 0.5700310333863274,
+    "quantum_delay_std_ms": 0.06976327216934852
   },
   "classical": {
     "n_spikes": 92524,
@@ -23,17 +23,17 @@
     "max_entropy": 9.6439
   },
   "quantum": {
-    "n_spikes": 80663,
-    "mean_rate_hz": 50.41,
-    "cv_isi_mean": 0.5501,
-    "cv_isi_std": 0.1799,
-    "fano_factor": 11.3909,
-    "spike_entropy": 9.5636,
+    "n_spikes": 107670,
+    "mean_rate_hz": 67.29,
+    "cv_isi_mean": 0.3515,
+    "cv_isi_std": 0.4432,
+    "fano_factor": 5.8695,
+    "spike_entropy": 9.5958,
     "max_entropy": 9.6439
   },
-  "cross_synchrony": 0.1519060620085291,
+  "cross_synchrony": 0.4903918777753653,
   "timing": {
-    "classical_elapsed_s": 17.038169860839844,
-    "quantum_elapsed_s": 35.40982985496521
+    "classical_elapsed_s": 58.35418152809143,
+    "quantum_elapsed_s": 57.00645422935486
   }
 }

@@ -23,7 +23,7 @@ keywords:
   - spiking neural networks
   - computational neuroscience
 abstract: >-
-  Simulation code for five computational experiments investigating
+  Simulation code for eleven computational experiments investigating
   whether quantum-mechanical effects (tunnelling delays, nuclear-spin
   coherence, environment-assisted quantum transport) can enhance
   neural computation. Includes spiking-network simulations (BRIAN2),

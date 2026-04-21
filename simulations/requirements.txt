@@ -1,3 +1,19 @@
-brian2>=2.7
+# Core dependencies (all experiments)
 numpy>=1.24
+scipy>=1.11
 matplotlib>=3.7
+
+# Phase 1 — spiking network (experiment 1a)
+brian2>=2.7
+
+# Phase 1 — quantum dynamics (experiments 1b, 1c, 1e, 3a)
+qutip>=5.0
+
+# Phase 1 — reservoir computing (experiments 1d, 1e)
+scikit-learn>=1.3
+
+# Optional — GPU-accelerated Lindblad sweep (experiment 1c_gpu)
+# torch>=2.0
+
+# Optional — Phase 2 experiments (2a–2e) require the Cortical Labs SDK.
+# Install separately: `pip install cl-sdk`

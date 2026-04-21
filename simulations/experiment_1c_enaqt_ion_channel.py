@@ -439,6 +439,7 @@ def main():
                                    np.log10(DEPHASING_MAX_CM), 40)
 
     barrier_curves = {}
+    barrier_peak_info = {}
     for barrier in BARRIER_VALUES:
         energies = np.array([0.0, barrier, barrier, 0.0])
         print(f"    Barrier = {barrier} cm⁻¹ ... ", end="", flush=True)
@@ -447,11 +448,28 @@ def main():
             eta, _, _, _ = compute_transport_efficiency(
                 gamma, site_energies=energies)
             etas_b.append(eta)
-        barrier_curves[barrier] = np.array(etas_b)
+        etas_b = np.array(etas_b)
+        barrier_curves[barrier] = etas_b
 
-        peak_b = np.argmax(etas_b)
-        print(f"peak at Γ = {dephasing_sparse[peak_b]:.1f} cm⁻¹, "
-              f"η = {etas_b[peak_b]:.4f}")
+        peak_b = int(np.argmax(etas_b))
+        # If the maximum sits at the edge of the swept range, there is no
+        # true interior ENAQT peak — report the curve as edge-limited so
+        # downstream analyses don't mistake the sweep boundary for the
+        # optimum.
+        edge_limited = peak_b == 0 or peak_b == len(etas_b) - 1
+        barrier_peak_info[barrier] = {
+            'peak_index': peak_b,
+            'peak_gamma_cm': round(float(dephasing_sparse[peak_b]), 2),
+            'peak_efficiency': round(float(etas_b[peak_b]), 6),
+            'edge_limited': bool(edge_limited),
+            'edge': ('low' if peak_b == 0 else
+                     'high' if peak_b == len(etas_b) - 1 else None),
+        }
+        status = (f"peak at Γ = {dephasing_sparse[peak_b]:.1f} cm⁻¹, "
+                  f"η = {etas_b[peak_b]:.4f}")
+        if edge_limited:
+            status += "  [edge-limited — no interior ENAQT peak in sweep]"
+        print(status)
 
     # ═══════════════════════════════════════════════
     # RESULTS SUMMARY
@@ -508,12 +526,7 @@ def main():
             'ratio_to_optimal': round(ratio, 3),
         },
         'barrier_comparison': {
-            str(barrier): {
-                'peak_gamma_cm': round(float(
-                    dephasing_sparse[np.argmax(barrier_curves[barrier])]), 2),
-                'peak_efficiency': round(float(
-                    np.max(barrier_curves[barrier])), 6),
-            }
+            str(barrier): barrier_peak_info[barrier]
             for barrier in BARRIER_VALUES
         },
         'elapsed_s': round(elapsed, 1),

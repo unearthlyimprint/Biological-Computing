@@ -126,13 +126,16 @@ def tunnelling_delay_distribution(n_samples, d_min_ms=0.5, d_max_ms=4.0,
 
     Notes
     -----
-    The mapping uses inverse transform sampling:
-        1. Draw u ~ Uniform(0, 1)
-        2. Map through exponential: delay = d_min + (d_max - d_min) * (1 - exp(-λu)) / (1 - exp(-λ))
-    where λ controls the skewness (derived from kappa and barrier width).
+    Inverse transform sampling from a truncated exponential with rate λ
+    on [d_min, d_max]:
+        PDF(d) ∝ exp(−k·(d − d_min)),  k = λ / (d_max − d_min)
+    Inverting the CDF gives
+        d = d_min − (d_max − d_min)/λ · ln(1 − u·(1 − exp(−λ)))
+    where u ~ Uniform(0, 1) and λ is derived from κ and the cleft width.
 
     For biologically plausible parameters, the distribution peaks near d_min
-    with a long tail toward d_max — the quantum tunnelling signature.
+    with an exponentially suppressed tail toward d_max — the quantum
+    tunnelling signature (fast crossing dominates).
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -150,13 +153,12 @@ def tunnelling_delay_distribution(n_samples, d_min_ms=0.5, d_max_ms=4.0,
     # Clamp lambda so the distribution is always well-behaved
     lam = np.clip(lam, 1.0, 50.0)
 
-    # Inverse CDF of truncated exponential → skewed delays
+    # Inverse CDF of truncated exponential — density peaks at d_min
     u = rng.uniform(0, 1, size=n_samples)
     exp_neg_lam = np.exp(-lam)
-    # Map: more weight near d_min (fast tunnelling)
     delays_ms = d_min_ms + (d_max_ms - d_min_ms) * (
-        1.0 - np.exp(-lam * u)
-    ) / (1.0 - exp_neg_lam)
+        -np.log(1.0 - u * (1.0 - exp_neg_lam))
+    ) / lam
 
     return delays_ms
 
