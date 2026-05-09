@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biological Computing Simulator — Quantum Effects in Neural Transport</title>
+  <meta name="description" content="Interactive simulation interface for quantum effects in biological computing: ENAQT ion channels, spiking networks, reservoir computing, and Posner spin dynamics.">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__logo">BIOLOGICAL COMPUTING <span>◈ SIMULATOR</span></div>
+      <div class="header__divider"></div>
+      <div class="header__status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">INITIALISING</span>
+      </div>
+      <div class="header__divider"></div>
+      <div class="header__status">
+        <span id="pkgStatus">—</span>
+      </div>
+      <div class="header__clock" id="clock"></div>
+    </header>
+
+    <!-- Sidebar: Experiment Selector -->
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <!-- Main Content -->
+    <main class="main" id="mainPanel">
+      <div class="welcome">
+        <div class="welcome__icon">◈</div>
+        <h2>Quantum Effects in Biological Computing</h2>
+        <p>Select an experiment from the left panel to view pre-computed results or launch an interactive simulation.</p>
+        <p style="font-family:var(--font-data);font-size:11px;color:var(--text-muted)">
+          11 EXPERIMENTS · 3 PHASES · BRIAN2 + QUTIP + ESN
+        </p>
+      </div>
+    </main>
+
+    <!-- Inspector -->
+    <aside class="inspector" id="inspector">
+      <div class="inspector__title">▸ DATA INSPECTOR</div>
+      <div id="inspectorContent">
+        <p style="font-size:12px;color:var(--text-muted);padding:20px 0;text-align:center;">
+          Select an experiment to inspect its data
+        </p>
+      </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>◈ BIOCOMP v1.0</span>
+      <span>|</span>
+      <span class="footer__console" id="console">Ready</span>
+      <span id="footerMetrics">—</span>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
